@@ -3,7 +3,8 @@ import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 
 
-const app = express ();
+
+const app = express();
 
 const { PORT = 3000 } = process.env;
 
@@ -13,7 +14,16 @@ app.use(bodyParser.json()); // для собирания JSON-формата
 app.use(bodyParser.urlencoded({ extended: true })); // для приёма веб-страниц внутри POST-запроса
 
 
-// Создаем схему Пользователя => убрать из app.js
+// Создаем временный мидлвэр по авторизации пользователя
+app.use((req, res, next) => {
+  req.user = {
+    _id: '63616bd2b216ed79c905d96f'
+  };
+  next();
+})
+
+
+// Создаем схему Пользователя => убрать из app.js в models/user
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -33,27 +43,36 @@ const userSchema = new mongoose.Schema({
   }
 })
 
-//Создаем модель Пользователя => убрать из app.js
-
-const user = mongoose.model('user', userSchema);
+//Создаем модель Пользователя => убрать из app.js в в models/user
+const User = mongoose.model('user', userSchema);
 
 
 // Создаем роутинг POST-запроса => убрать из app.js
-app.post('/users', (req, res) => {
-console.log('req.body =>', req.body) // убрать из кода, нужен только для проверки работы связи с сервером
-  const { name, about, avatar } = req.body;
-  user.create({name, about, avatar}) // создаем "create" из тела запроса константу с name, about, avatar
-  .then (user => res.send (user)) // если результат положительный, то отдаем пользователя
-  .catch (err => {
-    res.status(500).send({ message: 'Произошла ошибка' }) // если приходит ошибка, то пишем текст ошибки
-  })
+app.post('/users', (req, res) => {  //роутинг убрать в routes/users
+  // console.log('req.body =>', req.body) // убрать из кода, нужен только для проверки работы связи с сервером
+  const { name, about, avatar } = req.body; // все что ниже убрать в models/users
+  User.create({ name, about, avatar }) // создаем "create" из тела запроса константу с name, about, avatar
+    .then(user => res.send(user)) // если результат положительный, то отдаем пользователя
+    .catch(() => {
+      res.status(500).send({ message: 'Произошла ошибка' }) // если приходит ошибка, то пишем текст ошибки
+    })
 })
 
-// Создаем роутинг GET-запроса => убрать из app.js
-// app.get('/users', (req, res) => {
+// Создаем роутинг GET-запроса всех пользователей => убрать из app.js
+app.get('/users', (req, res) => { //роутинг убрать в routes/users
+  User.find({})  // все что ниже до строчки 59 убрать в models/users
+    .then(users => res.send({ data: users }))
+    .catch(() => {
+      res.status(500).send({ message: 'Произошла ошибка выгрузки с сервера' })
+    })
+})
 
-// })
-
+// Создаем роутинг GET-запроса по Id пользователя => убрать из app.js
+app.get('/users/:id', (req, res) => { // роутинг убрать в routes/users
+  User.findById(req.params.id) // все что ниже убрать в models/users
+    .then(user => res.send({ data: user }))
+    .catch(err => res.status(500).send({ message: 'Произошла ошибка поиска Юзера по id' }));
+})
 
 app.listen(PORT, () => {
   // Если всё работает, консоль покажет, какой порт приложение слушает
