@@ -21,4 +21,4 @@ const userSchema = new mongoose.Schema({
 });
 
 // Создаем модель Пользователя => убрать из app.js в в models/user
-export const user = mongoose.model('user', userSchema);
+export const User = mongoose.model('user', userSchema);

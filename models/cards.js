@@ -32,4 +32,4 @@ const cardSchema = new mongoose.Schema({
 });
 
 // Создаем модель Карточки
-export const card = mongoose.model('card', cardSchema);
+export const Card = mongoose.model('card', cardSchema);
