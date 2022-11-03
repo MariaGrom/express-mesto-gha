@@ -1,4 +1,5 @@
 import { card } from '../models/cards.js';
+import { constants } from 'http2';
 
 
 // Создаем контроллер POST-запроса для создания новой карточки
@@ -9,9 +10,9 @@ export const createCard = (req, res) => {
     .then(card => res.send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Введены некорректные данные' })
+        res.status(constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Введены некорректные данные' })
       } else {
-        res.status(500).send({ message: 'Произошла ошибка сервера' })
+        res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка сервера' })
       }
     })
 }
@@ -21,7 +22,7 @@ export const findCards = (req, res) => {
   card.find({})
     .then(cards => res.send({ data: cards }))
     .catch(() => {
-      res.status(500).send({ message: 'Произошла ошибка выгрузки карточек с сервера' })
+      res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка выгрузки карточек с сервера' })
     })
 }
 
@@ -32,11 +33,11 @@ export const deleteCard = (req, res) => {
       if (card) {
         res.send(card)
       } else {
-        res.status(404).send({ message: 'Карточка не найдена' })
+        res.status(constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Карточка не найдена' })
       }
     })
     .catch(() => {
-      res.status(500).send({ message: 'Произошла ошибка удаление карточки с сервера' })
+      res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка удаление карточки с сервера' })
     })
 }
 
@@ -49,7 +50,7 @@ export const likeCard = (req, res) => {
   )
     .then(card => res.send(card))
     .catch(() => {
-      res.status(500).send({ message: 'Произошла ошибка постановки лайка на карточку на сервере' })
+      res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка постановки лайка на карточку на сервере' })
     })
 }
 
@@ -62,6 +63,6 @@ export const dislikeCard = (req, res) => {
   )
     .then(card => res.send(card))
     .catch(() => {
-      res.status(500).send({ message: 'Произошла ошибка удаления лайка с карточки на сервере' })
+      res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка удаления лайка с карточки на сервере' })
     })
 }
