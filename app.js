@@ -9,6 +9,7 @@ const app = express();
 
 const { PORT = 3000 } = process.env;
 
+mongoose.set({ runValidators: true });
 mongoose.connect('mongodb://localhost:27017/mestodb'); // подключаемся к базе данных
 
 app.use(bodyParser.json()); // для собирания JSON-формата

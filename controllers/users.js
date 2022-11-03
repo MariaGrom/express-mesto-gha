@@ -1,12 +1,18 @@
-import { user } from '../models/user.js'
+import { user } from '../models/user.js';
+import { constants } from 'http2';
+
 
 // Создаем контроллер POST-запроса для создания нового пользователя
 export const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
-  user.create({ name, about, avatar }) // создаем "create" из тела запроса константу с name, about, avatar
-    .then(user => res.send(user)) // если результат положительный, то отдаем пользователя
-    .catch(() => {
-      res.status(500).send({ message: 'Произошла ошибка' }) // если приходит ошибка, то пишем текст ошибки
+  user.create({ name, about, avatar })
+    .then(user => res.send(user))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Введены некорректные данные' })
+      } else {
+        res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка сервера' })
+      }
     })
 }
 
@@ -15,35 +21,61 @@ export const findUsers = (req, res) => {
   user.find({})
     .then(users => res.send({ data: users }))
     .catch(() => {
-      res.status(500).send({ message: 'Произошла ошибка выгрузки с сервера' })
+      res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка сервера' })
     })
 }
 
-// Создаем контроллер GET-запроса по Id пользователя
+// Создаем контроллер GET-запроса по id пользователя
 export const findUserById = (req, res) => {
   user.findById(req.params.id)
-    .then(user => res.send({ data: user }))
+    .then((user) => {
+      if (user) {
+        res.send({ data: user })
+      } else {
+        res.status(constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Пользователь не найден' })
+      }
+    })
     .catch(() => {
-      res.status(500).send({ message: 'Произошла ошибка поиска Юзера по id' })
-    });
-}
+      res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка сервера' })
+    })
+};
 
 // Создаем контроллер PATCH-запроса по обновлению профиля
 export const updateUserProfile = (req, res) => {
   const { name, about } = req.body
-  user.findByIdAndUpdate(req.user._id, { name, about })
-  .then (user => res.send (user))
-  .catch(() => {
-    res.status(500).send({ message: 'Произошла ошибка обновления данных пользователя на сервере' })
-  })
+  user.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
+    .then((user) => {
+      if (user) {
+        res.send(user)
+      } else {
+        res.status(constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Пользователь не найден' })
+      }
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Введены некорректные данные при обновлении профиля' })
+      } else {
+        res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка сервера' })
+      }
+    })
 }
 
 // Создаем контроллер PATCH-запроса по обновлению аватара профиля
 export const updateUserAvatar = (req, res) => {
-  const {avatar} = req.body
-  user.findByIdAndUpdate(req.user._id, {avatar})
-  .then(user => res.send(user))
-  .catch(() => {
-    res.status(500).send({ message: 'Произошла ошибка обновления аватара пользователя на сервере' })
-  })
+  const { avatar } = req.body
+  user.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
+    .then((user) => {
+      if (user) {
+        res.send(user)
+      } else {
+        res.status(constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Пользователь не найден' })
+      }
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Введены некорректные данные при обновлении аватара' })
+      } else {
+        res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка сервера' })
+      }
+    })
 }
