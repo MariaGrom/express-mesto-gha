@@ -1,6 +1,6 @@
 import { user } from '../models/user.js'
 
-// Создаем контролер POST-запроса для создания нового пользователя
+// Создаем контроллер POST-запроса для создания нового пользователя
 export const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   user.create({ name, about, avatar }) // создаем "create" из тела запроса константу с name, about, avatar
@@ -10,7 +10,7 @@ export const createUser = (req, res) => {
     })
 }
 
-// Создаем контролер GET-запроса всех пользователей
+// Создаем контроллер GET-запроса всех пользователей
 export const findUsers = (req, res) => {
   user.find({})
     .then(users => res.send({ data: users }))
@@ -19,11 +19,31 @@ export const findUsers = (req, res) => {
     })
 }
 
-// Создаем контролер GET-запроса по Id пользователя
+// Создаем контроллер GET-запроса по Id пользователя
 export const findUserById = (req, res) => {
   user.findById(req.params.id)
     .then(user => res.send({ data: user }))
     .catch(() => {
       res.status(500).send({ message: 'Произошла ошибка поиска Юзера по id' })
     });
+}
+
+// Создаем контроллер PATCH-запроса по обновлению профиля
+export const updateUserProfile = (req, res) => {
+  const { name, about } = req.body
+  user.findByIdAndUpdate(req.user._id, { name, about })
+  .then (user => res.send (user))
+  .catch(() => {
+    res.status(500).send({ message: 'Произошла ошибка обновления данных пользователя на сервере' })
+  })
+}
+
+// Создаем контроллер PATCH-запроса по обновлению аватара профиля
+export const updateUserAvatar = (req, res) => {
+  const {avatar} = req.body
+  user.findByIdAndUpdate(req.user._id, {avatar})
+  .then(user => res.send(user))
+  .catch(() => {
+    res.status(500).send({ message: 'Произошла ошибка обновления аватара пользователя на сервере' })
+  })
 }
