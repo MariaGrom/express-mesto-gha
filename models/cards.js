@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 // Создаем схему Карточки
 const cardSchema = new mongoose.Schema({
@@ -15,20 +15,21 @@ const cardSchema = new mongoose.Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: 'user'
+    ref: 'user',
   },
   likes: {
     type: [{
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'user'}
+      ref: 'user',
+    },
     ],
-    default: []
+    default: [],
   },
   createdAt: {
     type: Date,
-    default: Date.now
-  }
-})
+    default: Date.now,
+  },
+});
 
-//Создаем модель Карточки
+// Создаем модель Карточки
 export const card = mongoose.model('card', cardSchema);

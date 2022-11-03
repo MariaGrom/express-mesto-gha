@@ -17,8 +17,8 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     required: true,
-  }
-})
+  },
+});
 
-//Создаем модель Пользователя => убрать из app.js в в models/user
+// Создаем модель Пользователя => убрать из app.js в в models/user
 export const user = mongoose.model('user', userSchema);
