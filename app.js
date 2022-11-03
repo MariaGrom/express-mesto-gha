@@ -1,8 +1,9 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
-
-
+import process from 'process';
+import { userRoutes } from './routes/users.js';
+import { cardRoutes } from './routes/cards.js';
 
 const app = express();
 
@@ -22,57 +23,11 @@ app.use((req, res, next) => {
   next();
 })
 
+// Вызываем роутинг пользователя
+app.use('/', userRoutes)
 
-// Создаем схему Пользователя => убрать из app.js в models/user
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    minlength: 2,
-    maxlength: 30,
-  },
-  about: {
-    type: String,
-    required: true,
-    minlength: 2,
-    maxlength: 30,
-  },
-  avatar: {
-    type: String,
-    required: true,
-  }
-})
-
-//Создаем модель Пользователя => убрать из app.js в в models/user
-const User = mongoose.model('user', userSchema);
-
-
-// Создаем роутинг POST-запроса => убрать из app.js
-app.post('/users', (req, res) => {  //роутинг убрать в routes/users
-  // console.log('req.body =>', req.body) // убрать из кода, нужен только для проверки работы связи с сервером
-  const { name, about, avatar } = req.body; // все что ниже убрать в models/users
-  User.create({ name, about, avatar }) // создаем "create" из тела запроса константу с name, about, avatar
-    .then(user => res.send(user)) // если результат положительный, то отдаем пользователя
-    .catch(() => {
-      res.status(500).send({ message: 'Произошла ошибка' }) // если приходит ошибка, то пишем текст ошибки
-    })
-})
-
-// Создаем роутинг GET-запроса всех пользователей => убрать из app.js
-app.get('/users', (req, res) => { //роутинг убрать в routes/users
-  User.find({})  // все что ниже до строчки 59 убрать в models/users
-    .then(users => res.send({ data: users }))
-    .catch(() => {
-      res.status(500).send({ message: 'Произошла ошибка выгрузки с сервера' })
-    })
-})
-
-// Создаем роутинг GET-запроса по Id пользователя => убрать из app.js
-app.get('/users/:id', (req, res) => { // роутинг убрать в routes/users
-  User.findById(req.params.id) // все что ниже убрать в models/users
-    .then(user => res.send({ data: user }))
-    .catch(err => res.status(500).send({ message: 'Произошла ошибка поиска Юзера по id' }));
-})
+// Вызываем роутинг карточек
+app.use('/', cardRoutes)
 
 app.listen(PORT, () => {
   // Если всё работает, консоль покажет, какой порт приложение слушает
