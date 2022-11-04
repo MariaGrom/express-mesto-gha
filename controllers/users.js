@@ -34,8 +34,12 @@ export const findUserById = (req, res) => {
         res.status(constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Пользователь не найден' });
       }
     })
-    .catch(() => {
-      res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка сервера' });
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Введены некорректные данные поиска' });
+      } else {
+        res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка сервера' });
+      }
     });
 };
 
