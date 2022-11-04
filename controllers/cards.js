@@ -35,7 +35,7 @@ export const deleteCard = (req, res) => {
         res.status(constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Карточка не найдена' });
       }
     })
-    .catch(() => {
+    .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         res.status(constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Введены некорректные данные' });
       } else {
@@ -53,7 +53,7 @@ export const likeCard = (req, res) => {
   )
     .then((card) => {
       if (card) {
-        res.send(card)
+        res.send(card);
       } else {
         res.status(constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Карточка не найдена' });
       }
@@ -76,7 +76,7 @@ export const dislikeCard = (req, res) => {
   )
     .then((card) => {
       if (card) {
-        res.send(card)
+        res.send(card);
       } else {
         res.status(constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Карточка не найдена' });
       }
