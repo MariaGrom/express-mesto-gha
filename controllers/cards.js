@@ -36,7 +36,11 @@ export const deleteCard = (req, res) => {
       }
     })
     .catch(() => {
-      res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка удаление карточки с сервера' });
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        res.status(constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Введены некорректные данные' });
+      } else {
+        res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка удаление карточки с сервера' });
+      }
     });
 };
 
@@ -47,7 +51,13 @@ export const likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
   )
-    .then((card) => res.send(card))
+    .then((card) => {
+      if (card) {
+        res.send(card)
+      } else {
+        res.status(constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Карточка не найдена' });
+      }
+    })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         res.status(constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Введены некорректные данные' });
@@ -64,8 +74,18 @@ export const dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
   )
-    .then((card) => res.send(card))
-    .catch(() => {
-      res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка удаления лайка с карточки на сервере' });
+    .then((card) => {
+      if (card) {
+        res.send(card)
+      } else {
+        res.status(constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Карточка не найдена' });
+      }
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        res.status(constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Введены некорректные данные' });
+      } else {
+        res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка удаления лайка с карточки на сервере' });
+      }
     });
 };
