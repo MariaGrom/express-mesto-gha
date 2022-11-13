@@ -29,12 +29,32 @@ export const login = (req, res) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
- const token = jwt.sign({_id: user._id}, 'some-secret-key', { expiresIn: '7d'})
- res.send({token})
-     })
-    .catch((err) => {
-      res.status(constants.HTTP_STATUS_UNAUTHORIZED).send({ message: err.message })
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' })
+      res.send({ token })
     })
+    .catch((err) => {
+      res.status(constants.HTTP_STATUS_UNAUTHORIZED).send({ message: 'не удалось войти' })
+    })
+}
+
+// Создаем контроллер GET-запроса о текущем пользователе
+export const findCurrentUser = (req, res) => {
+  const id = (req.params.id == 'me') ? req.user._id : req.params.id;
+  User.findById({ id })
+    .then((user) => {
+      if (user) {
+        res.send({ data: user })
+      } else {
+        res.status(constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Пользователь не найден' });
+      }
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Введены некорректные данные поиска' });
+      } else {
+        res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка сервера' });
+      }
+    });
 }
 
 // Создаем контроллер GET-запроса всех пользователей

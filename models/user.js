@@ -35,22 +35,25 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 8,
+    select: false,
   }
 });
 
 userSchema.statics.findUserByCredentials = function (email, password) {
   return this.findOne({ email })
-    .then((user) => {
-      if (!user) {
+  .select('+password')
+    .then((document) => {
+      if (!document) {
         return Promise.reject(new Error('Неправильные почта или пароль')); // введенная почта не найдена - отклоняем промис
       }
-
-      return bcrypt.compare(password, user.password) // введенная почта найдена - сравниваем переданный пароль и хэш из базы
+      return bcrypt.compare(password, document.password) // введенная почта найдена - сравниваем переданный пароль и хэш из базы
         .then((matched) => {
           if (!matched) {
             return Promise.reject(new Error('Неправильные почта или пароль')); // хэши не совпали - отклоняем промис
           }
-          return user
+          const user = document.toObject();
+          delete user.password;
+          return user;
         })
     })
 }

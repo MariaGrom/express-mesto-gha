@@ -5,7 +5,8 @@ import process from 'process';
 import { constants } from 'http2';
 import { userRoutes } from './routes/users.js';
 import { cardRoutes } from './routes/cards.js';
-import { createUser, login } from './controllers/users.js'
+import { createUser, login } from './controllers/users.js';
+import { auth } from './middlewares/auth.js'
 
 const app = express();
 
@@ -18,24 +19,24 @@ app.use(bodyParser.json()); // для собирания JSON-формата
 app.use(bodyParser.urlencoded({ extended: true })); // для приёма веб-страниц внутри POST-запроса
 
 // Создаем временный мидлвэр по авторизации пользователя
-app.use((req, res, next) => {
-  req.user = {
-    _id: '63616bd2b216ed79c905d96f',
-  };
-  next();
-});
+// app.use((req, res, next) => {
+//   req.user = {
+//     _id: '63616bd2b216ed79c905d96f',
+//   };
+//   next();
+// });
 
-// Вызываем роутинг пользователя
-app.use('/', userRoutes);
-
-// Вызываем роутинг карточек
-app.use('/', cardRoutes);
+// Вызываем роутинг входа
+app.post('/signup', createUser);
 
 // Вызываем роутинг регистрации
 app.post('/signin', login);
 
-// Вызываем роутинг входа
-app.post('/signup', createUser);
+// Вызываем роутинг пользователя
+app.use('/', auth, userRoutes);
+
+// Вызываем роутинг карточек
+app.use('/', auth, cardRoutes);
 
 // Запрос главной страницы приложения
 app.all('/*', (req, res) => {
