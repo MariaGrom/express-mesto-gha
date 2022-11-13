@@ -1,12 +1,12 @@
 import { constants } from 'http2';
 import { User } from '../models/user.js';
-import bcryptjs from 'bcryptjs';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 // Создаем контроллер POST-запроса для создания нового пользователя с хешированием пароля
 export const createUser = (req, res) => {
   const { name, about, avatar, email, password } = req.body;
-  bcryptjs.hash(req.body.password, 10)
+  bcrypt.hash(req.body.password, 10)
     .then((hash) => User.create({
       name: req.body.name, //необязательное поле - можно удалить?
       about: req.body.about, //необязательное поле - можно удалить?

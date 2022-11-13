@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import isEmail from 'validator/lib/isEmail.js';
+import bcrypt from 'bcryptjs';
 
 // Создаем схему Пользователя
 const userSchema = new mongoose.Schema({

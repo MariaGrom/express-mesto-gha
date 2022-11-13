@@ -18,25 +18,20 @@ mongoose.connect('mongodb://localhost:27017/mestodb'); // подключаемс
 app.use(bodyParser.json()); // для собирания JSON-формата
 app.use(bodyParser.urlencoded({ extended: true })); // для приёма веб-страниц внутри POST-запроса
 
-// Создаем временный мидлвэр по авторизации пользователя
-// app.use((req, res, next) => {
-//   req.user = {
-//     _id: '63616bd2b216ed79c905d96f',
-//   };
-//   next();
-// });
-
-// Вызываем роутинг входа
+// Вызываем роутинг регистрации
 app.post('/signup', createUser);
 
-// Вызываем роутинг регистрации
+// Вызываем роутинг входа
 app.post('/signin', login);
 
+// Вызываем авторизацию
+app.use(auth);
+
 // Вызываем роутинг пользователя
-app.use('/', auth, userRoutes);
+app.use('/', userRoutes);
 
 // Вызываем роутинг карточек
-app.use('/', auth, cardRoutes);
+app.use('/', cardRoutes);
 
 // Запрос главной страницы приложения
 app.all('/*', (req, res) => {

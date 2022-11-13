@@ -7,6 +7,7 @@ export const auth = (req, res, next) => {
     return res
       .status(constants.HTTP_STATUS_UNAUTHORIZED)
       .send({ message: 'Необходима авторизация' });
+      // console.log(err)
   }
   const token = authorization.replace('Bearer ', ''); // Извлечем токен
   let payload;
