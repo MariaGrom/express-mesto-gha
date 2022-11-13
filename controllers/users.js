@@ -1,10 +1,19 @@
 import { constants } from 'http2';
 import { User } from '../models/user.js';
+import bcryptjs from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
-// Создаем контроллер POST-запроса для создания нового пользователя
+// Создаем контроллер POST-запроса для создания нового пользователя с хешированием пароля
 export const createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
+  const { name, about, avatar, email, password } = req.body;
+  bcryptjs.hash(req.body.password, 10)
+    .then((hash) => User.create({
+      name: req.body.name, //необязательное поле - можно удалить?
+      about: req.body.about, //необязательное поле - можно удалить?
+      avatar: req.body.avatar, //необязательное поле - можно удалить?
+      email: req.body.email,
+      password: hash,
+    }))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -14,6 +23,19 @@ export const createUser = (req, res) => {
       }
     });
 };
+
+// Создаем контроллер логирования пользователя
+export const login = (req, res) => {
+  const { email, password } = req.body;
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+ const token = jwt.sign({_id: user._id}, 'some-secret-key', { expiresIn: '7d'})
+ res.send({token})
+     })
+    .catch((err) => {
+      res.status(constants.HTTP_STATUS_UNAUTHORIZED).send({ message: err.message })
+    })
+}
 
 // Создаем контроллер GET-запроса всех пользователей
 export const findUsers = (req, res) => {
