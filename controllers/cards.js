@@ -3,7 +3,7 @@ import { Card } from '../models/cards.js';
 
 // Создаем контроллер POST-запроса для создания новой карточки
 export const createCard = (req, res) => {
-  console.log(req.user._id);
+  //console.log(req.user._id);
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send(card))
@@ -30,7 +30,11 @@ export const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.id)
     .then((card) => {
       if (card) {
-        res.send(card);
+        if (card.owner.toString() === req.user._id) {
+          res.send(card)
+        } else {
+          res.status(constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Нет прав на удаление' })
+        }
       } else {
         res.status(constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Карточка не найдена' });
       }

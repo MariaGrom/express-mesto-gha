@@ -39,8 +39,7 @@ export const login = (req, res) => {
 
 // Создаем контроллер GET-запроса о текущем пользователе
 export const findCurrentUser = (req, res) => {
-  const id = (req.params.id == 'me') ? req.user._id : req.params.id;
-  User.findById({ id })
+  User.findById(req.user._id)
     .then((user) => {
       if (user) {
         res.send({ data: user })
@@ -49,6 +48,7 @@ export const findCurrentUser = (req, res) => {
       }
     })
     .catch((err) => {
+      console.log('имя пользователя', err)
       if (err.name === 'CastError') {
         res.status(constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Введены некорректные данные поиска' });
       } else {
