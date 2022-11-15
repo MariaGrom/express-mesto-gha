@@ -1,55 +1,57 @@
-import { constants } from 'http2';
 import { Card } from '../models/cards.js';
+import { BadRequestError } from '../errors/BadRequestError.js';
+import { InternalServerError } from '../errors/InternalServerError.js';
+import { ForbiddenError } from '../errors/ForbiddenError.js';
+import { NotFoundError } from '../errors/NotFoundError.js';
 
 // Создаем контроллер POST-запроса для создания новой карточки
-export const createCard = (req, res) => {
-  //console.log(req.user._id);
+export const createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Введены некорректные данные' });
+        next(new BadRequestError('Введены некорректные данные'))
       } else {
-        res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка сервера' });
+        next(new InternalServerError('Произошла ошибка сервера'))
       }
     });
 };
 
 // Создаем контроллер GET-запроса для выгрузки всех карточек
-export const findCards = (req, res) => {
+export const findCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
     .catch(() => {
-      res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка выгрузки карточек с сервера' });
+      next(new InternalServerError('Произошла ошибка выгрузки карточек с сервера'))
     });
 };
 
 // Создаем контроллер DELETE-запроса на удаление карточки по id
-export const deleteCard = (req, res) => {
+export const deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.id)
     .then((card) => {
       if (card) {
         if (card.owner.toString() === req.user._id) {
           res.send(card)
         } else {
-          res.status(constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Нет прав на удаление' })
+          next(new ForbiddenError('Доступ запрещен'))
         }
       } else {
-        res.status(constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Карточка не найдена' });
+        next(new NotFoundError('Карточка не найдена'))
       }
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        res.status(constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Введены некорректные данные' });
+        next(new BadRequestError('Введены некорректные данные'))
       } else {
-        res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка удаление карточки с сервера' });
+        next(new InternalServerError('Произошла ошибка удаление карточки с сервера'))
       }
     });
 };
 
 // Создаем контроллер PUT-запроса постановки лайка
-export const likeCard = (req, res) => {
+export const likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
@@ -59,20 +61,20 @@ export const likeCard = (req, res) => {
       if (card) {
         res.send(card);
       } else {
-        res.status(constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Карточка не найдена' });
+        next(new NotFoundError('Карточка не найдена'))
       }
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        res.status(constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Введены некорректные данные' });
+        next(new BadRequestError('Введены некорректные данные'))
       } else {
-        res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка постановки лайка на карточку на сервере' });
+        next(new InternalServerError('Произошла ошибка постановки лайка на карточку на сервере'))
       }
     });
 };
 
 // Создаем контроллер DELETE-запроса удаления лайка
-export const dislikeCard = (req, res) => {
+export const dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
@@ -82,14 +84,14 @@ export const dislikeCard = (req, res) => {
       if (card) {
         res.send(card);
       } else {
-        res.status(constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Карточка не найдена' });
+        next(new NotFoundError('Карточка не найдена'))
       }
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        res.status(constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Введены некорректные данные' });
+        next(new BadRequestError('Введены некорректные данные'))
       } else {
-        res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка удаления лайка с карточки на сервере' });
+        next(new InternalServerError('Произошла ошибка удаления лайка с карточки на сервере'))
       }
     });
 };

@@ -27,9 +27,7 @@ import jwt from 'jsonwebtoken';
 
 export const auth = (req, res, next) => {
   const { authorization = '' } = req.headers;
-  //console.log('заголовок запроса', req.headers)
   if (!authorization) {
-    //console.log('авторизация', authorization)
     res
       .status(constants.HTTP_STATUS_UNAUTHORIZED)
       .send({ message: 'Необходима авторизация' });
