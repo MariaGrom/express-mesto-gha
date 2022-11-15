@@ -29,16 +29,15 @@ export const findCards = (req, res, next) => {
 
 // Создаем контроллер DELETE-запроса на удаление карточки по id
 export const deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.id)
+  Card.findById(req.params.cardId)
     .then((card) => {
-      if (card) {
-        if (card.owner.toString() === req.user._id) {
-          res.send(card)
-        } else {
-          next(new ForbiddenError('Доступ запрещен'))
-        }
-      } else {
+      if (!card) {
         next(new NotFoundError('Карточка не найдена'))
+      } else if (card.owner.toString() !== req.user._id) {
+        next(new ForbiddenError('Доступ запрещен'))
+      } else {
+        card.remove()
+          .then(() => res.send(card))
       }
     })
     .catch((err) => {

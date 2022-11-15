@@ -4,7 +4,7 @@ import { Joi, celebrate } from "celebrate";
 export const cardIdValidator = celebrate({
   params: Joi.object({
     cardId: Joi.string().hex().length(24).required(),
-  }),
+  }).required(),
 });
 
 export const cardBodyValidator = celebrate({

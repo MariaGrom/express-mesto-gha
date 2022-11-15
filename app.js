@@ -8,6 +8,8 @@ import { cardRoutes } from './routes/cards.js';
 import { createUser, login } from './controllers/users.js';
 import { auth } from './middlewares/auth.js'
 import { errors } from 'celebrate';
+import { userBodyValidator } from './validators/validators.js';
+import { userLoginValidator } from './validators/validators.js';
 
 const app = express();
 
@@ -20,10 +22,10 @@ app.use(bodyParser.json()); // для собирания JSON-формата
 app.use(bodyParser.urlencoded({ extended: true })); // для приёма веб-страниц внутри POST-запроса
 
 // Вызываем роутинг регистрации
-app.post('/signup', createUser);
+app.post('/signup', userBodyValidator, createUser);
 
 // Вызываем роутинг входа
-app.post('/signin', login);
+app.post('/signin', userLoginValidator, login);
 
 // Вызываем авторизацию
 app.use(auth);
