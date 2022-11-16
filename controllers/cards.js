@@ -11,9 +11,9 @@ export const createCard = (req, res, next) => {
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Введены некорректные данные'))
+        next(new BadRequestError('Введены некорректные данные'));
       } else {
-        next(new InternalServerError('Произошла ошибка сервера'))
+        next(new InternalServerError('Произошла ошибка сервера'));
       }
     });
 };
@@ -23,7 +23,7 @@ export const findCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
     .catch(() => {
-      next(new InternalServerError('Произошла ошибка выгрузки карточек с сервера'))
+      next(new InternalServerError('Произошла ошибка выгрузки карточек с сервера'));
     });
 };
 
@@ -32,19 +32,19 @@ export const deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        next(new NotFoundError('Карточка не найдена'))
+        next(new NotFoundError('Карточка не найдена'));
       } else if (card.owner.toString() !== req.user._id) {
-        next(new ForbiddenError('Доступ запрещен'))
+        next(new ForbiddenError('Доступ запрещен'));
       } else {
         card.remove()
-          .then(() => res.send(card))
+          .then(() => res.send(card));
       }
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(new BadRequestError('Введены некорректные данные'))
+        next(new BadRequestError('Введены некорректные данные'));
       } else {
-        next(new InternalServerError('Произошла ошибка удаление карточки с сервера'))
+        next(new InternalServerError('Произошла ошибка удаление карточки с сервера'));
       }
     });
 };
@@ -60,14 +60,14 @@ export const likeCard = (req, res, next) => {
       if (card) {
         res.send(card);
       } else {
-        next(new NotFoundError('Карточка не найдена'))
+        next(new NotFoundError('Карточка не найдена'));
       }
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(new BadRequestError('Введены некорректные данные'))
+        next(new BadRequestError('Введены некорректные данные'));
       } else {
-        next(new InternalServerError('Произошла ошибка постановки лайка на карточку на сервере'))
+        next(new InternalServerError('Произошла ошибка постановки лайка на карточку на сервере'));
       }
     });
 };
@@ -83,14 +83,14 @@ export const dislikeCard = (req, res, next) => {
       if (card) {
         res.send(card);
       } else {
-        next(new NotFoundError('Карточка не найдена'))
+        next(new NotFoundError('Карточка не найдена'));
       }
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(new BadRequestError('Введены некорректные данные'))
+        next(new BadRequestError('Введены некорректные данные'));
       } else {
-        next(new InternalServerError('Произошла ошибка удаления лайка с карточки на сервере'))
+        next(new InternalServerError('Произошла ошибка удаления лайка с карточки на сервере'));
       }
     });
 };

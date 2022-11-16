@@ -4,12 +4,9 @@ import {
   findUserById,
   updateUserProfile,
   updateUserAvatar,
-  findCurrentUser
+  findCurrentUser,
 } from '../controllers/users.js';
-import { userAvatarValidator } from '../validators/validators.js';
-import { userProfileValidator } from '../validators/validators.js';
-import { userIdValidator } from '../validators/validators.js';
-
+import { userAvatarValidator, userProfileValidator, userIdValidator } from '../validators/validators.js';
 
 export const userRoutes = Router();
 

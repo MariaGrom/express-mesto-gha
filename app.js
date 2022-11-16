@@ -3,13 +3,12 @@ import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import process from 'process';
 import { constants } from 'http2';
+import { errors } from 'celebrate';
 import { userRoutes } from './routes/users.js';
 import { cardRoutes } from './routes/cards.js';
 import { createUser, login } from './controllers/users.js';
-import { auth } from './middlewares/auth.js'
-import { errors } from 'celebrate';
-import { userBodyValidator } from './validators/validators.js';
-import { userLoginValidator } from './validators/validators.js';
+import { auth } from './middlewares/auth.js';
+import { userBodyValidator, userLoginValidator } from './validators/validators.js';
 
 const app = express();
 
@@ -48,8 +47,8 @@ app.use((err, req, res, next) => {
   const message = err.message || 'Неизвестная ошибка';
   res.status(status).send({ message });
   next();
-})
+});
 
 app.listen(PORT, () => {
-  console.log('Запускаем сервер')
+  console.log('Запускаем сервер');
 });

@@ -1,5 +1,5 @@
-import { Joi, celebrate } from "celebrate";
-import { urlAvatar } from "../models/user.js"
+import { Joi, celebrate } from 'celebrate';
+import { urlAvatar } from '../models/user.js';
 
 // Валидация карточек
 export const cardIdValidator = celebrate({

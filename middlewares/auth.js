@@ -24,7 +24,6 @@ import jwt from 'jsonwebtoken';
 //   next();
 // }
 
-
 export const auth = (req, res, next) => {
   const { authorization = '' } = req.headers;
   if (!authorization) {
@@ -39,8 +38,8 @@ export const auth = (req, res, next) => {
       next();
     } catch (err) {
       res
-      .status(constants.HTTP_STATUS_UNAUTHORIZED)
-      .send({ message: 'Необходима авторизация' });
+        .status(constants.HTTP_STATUS_UNAUTHORIZED)
+        .send({ message: 'Необходима авторизация' });
     }
   }
 };

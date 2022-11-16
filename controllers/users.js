@@ -1,6 +1,6 @@
-import { User } from '../models/user.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { User } from '../models/user.js';
 import { BadRequestError } from '../errors/BadRequestError.js';
 import { InternalServerError } from '../errors/InternalServerError.js';
 import { UnauthorizedError } from '../errors/UnauthorizedError.js';
@@ -9,8 +9,10 @@ import { ConflictError } from '../errors/ConflictError.js';
 
 // Создаем контроллер POST-запроса для создания нового пользователя с хешированием пароля
 export const createUser = (req, res, next) => {
-  const { name, about, avatar, email, password } = req.body;
-  bcrypt.hash(req.body.password, 10)
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
+  bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name,
       about,
@@ -18,7 +20,7 @@ export const createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    //.then((user) => res.send({ data: user }))
+    // .then((user) => res.send({ data: user }))
     .then((document) => {
       const user = document.toObject();
       delete user.password;
@@ -26,11 +28,11 @@ export const createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Введены некорректные данные'))
+        next(new BadRequestError('Введены некорректные данные'));
       } else if (err.code === 11000) {
-        next(new ConflictError('Пользователь с такой почтой уже существует'))
+        next(new ConflictError('Пользователь с такой почтой уже существует'));
       } else {
-        next(new InternalServerError('Произошла ошибка сервера'))
+        next(new InternalServerError('Произошла ошибка сервера'));
       }
     });
 };
@@ -40,40 +42,40 @@ export const login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' })
-      res.send({ token })
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      res.send({ token });
     })
-    .catch((err) => {
-      next(new UnauthorizedError('Вход не выполнен. Необходима регистрация'))
-    })
-}
+    .catch(() => {
+      next(new UnauthorizedError('Вход не выполнен. Необходима регистрация'));
+    });
+};
 
 // Создаем контроллер GET-запроса о текущем пользователе
 export const findCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (user) {
-        res.send({ data: user })
+        res.send({ data: user });
       } else {
-        next(new NotFoundError('Пользователь не найден'))
+        next(new NotFoundError('Пользователь не найден'));
       }
     })
     .catch((err) => {
-      console.log('имя пользователя', err)
+      console.log('имя пользователя', err);
       if (err.name === 'CastError') {
-        next(new BadRequestError('Введены некорректные данные поиска'))
+        next(new BadRequestError('Введены некорректные данные поиска'));
       } else {
-        next(new InternalServerError('Произошла ошибка сервера'))
+        next(new InternalServerError('Произошла ошибка сервера'));
       }
     });
-}
+};
 
 // Создаем контроллер GET-запроса всех пользователей
 export const findUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
     .catch(() => {
-      next(new InternalServerError('Произошла ошибка сервера'))
+      next(new InternalServerError('Произошла ошибка сервера'));
     });
 };
 
@@ -84,14 +86,14 @@ export const findUserById = (req, res, next) => {
       if (user) {
         res.send({ data: user });
       } else {
-        next(new NotFoundError('Пользователь не найден'))
+        next(new NotFoundError('Пользователь не найден'));
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Введены некорректные данные поиска'))
+        next(new BadRequestError('Введены некорректные данные поиска'));
       } else {
-        next(new InternalServerError('Произошла ошибка сервера'))
+        next(new InternalServerError('Произошла ошибка сервера'));
       }
     });
 };
@@ -104,14 +106,14 @@ export const updateUserProfile = (req, res, next) => {
       if (user) {
         res.send(user);
       } else {
-        next(new NotFoundError('Пользователь не найден'))
+        next(new NotFoundError('Пользователь не найден'));
       }
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Введены некорректные данные поиска'))
+        next(new BadRequestError('Введены некорректные данные поиска'));
       } else {
-        next(new InternalServerError('Произошла ошибка сервера'))
+        next(new InternalServerError('Произошла ошибка сервера'));
       }
     });
 };
@@ -124,14 +126,14 @@ export const updateUserAvatar = (req, res, next) => {
       if (user) {
         res.send(user);
       } else {
-        next(new NotFoundError('Пользователь не найден'))
+        next(new NotFoundError('Пользователь не найден'));
       }
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Введены некорректные данные поиска'))
+        next(new BadRequestError('Введены некорректные данные поиска'));
       } else {
-        next(new InternalServerError('Произошла ошибка сервера'))
+        next(new InternalServerError('Произошла ошибка сервера'));
       }
     });
 };
