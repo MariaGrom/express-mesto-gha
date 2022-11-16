@@ -1,4 +1,5 @@
 import { Joi, celebrate } from "celebrate";
+import { urlAvatar } from "../models/user.js"
 
 // Валидация карточек
 export const cardIdValidator = celebrate({
@@ -32,13 +33,13 @@ export const userBodyValidator = celebrate({
 });
 
 export const userAvatarValidator = celebrate({
-  params: Joi.object().keys({
-    avatar: Joi.string().uri({ scheme: ['http', 'https'] }).required(),
+  body: Joi.object().keys({
+    avatar: Joi.string().regex(urlAvatar).uri({ scheme: ['http', 'https'] }).required(),
   }),
 });
 
 export const userProfileValidator = celebrate({
-  params: Joi.object().keys({
+  body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
     about: Joi.string().min(2).max(30).required(),
   }),

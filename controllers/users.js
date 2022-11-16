@@ -74,7 +74,7 @@ export const findUsers = (req, res, next) => {
 
 // Создаем контроллер GET-запроса по id пользователя
 export const findUserById = (req, res, next) => {
-  User.findById(req.params.id)
+  User.findById(req.params.userId)
     .then((user) => {
       if (user) {
         res.send({ data: user });

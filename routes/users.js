@@ -15,6 +15,6 @@ export const userRoutes = Router();
 
 userRoutes.get('/users/me', findCurrentUser);
 userRoutes.get('/users', findUsers);
-userRoutes.get('/users/:id', userIdValidator, findUserById);
+userRoutes.get('/users/:userId', userIdValidator, findUserById);
 userRoutes.patch('/users/me', userProfileValidator, updateUserProfile);
 userRoutes.patch('/users/me/avatar', userAvatarValidator, updateUserAvatar);
