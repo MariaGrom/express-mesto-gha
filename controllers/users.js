@@ -20,7 +20,6 @@ export const createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    // .then((user) => res.send({ data: user }))
     .then((document) => {
       const user = document.toObject();
       delete user.password;
@@ -46,7 +45,7 @@ export const login = (req, res, next) => {
       res.send({ token });
     })
     .catch(() => {
-      next(new UnauthorizedError('Вход не выполнен. Необходима регистрация'));
+      next(new UnauthorizedError('Неверный логин или пароль'));
     });
 };
 
@@ -61,7 +60,6 @@ export const findCurrentUser = (req, res, next) => {
       }
     })
     .catch((err) => {
-      console.log('имя пользователя', err);
       if (err.name === 'CastError') {
         next(new BadRequestError('Введены некорректные данные поиска'));
       } else {

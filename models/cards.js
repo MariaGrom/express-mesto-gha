@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { urlLink } from './user.js';
 
 // Создаем схему Карточки
 const cardSchema = new mongoose.Schema({
@@ -11,6 +12,10 @@ const cardSchema = new mongoose.Schema({
   link: {
     type: String,
     required: true,
+    validate: {
+      validator: (link) => urlLink.test(link),
+      message: () => 'Требуется http(s) ссылка',
+    },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,

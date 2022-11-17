@@ -36,8 +36,8 @@ export const deleteCard = (req, res, next) => {
       } else if (card.owner.toString() !== req.user._id) {
         next(new ForbiddenError('Доступ запрещен'));
       } else {
-        card.remove()
-          .then(() => res.send(card));
+        card.remove();
+        res.send(card);
       }
     })
     .catch((err) => {

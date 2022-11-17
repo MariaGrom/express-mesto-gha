@@ -9,6 +9,7 @@ import { cardRoutes } from './routes/cards.js';
 import { createUser, login } from './controllers/users.js';
 import { auth } from './middlewares/auth.js';
 import { userBodyValidator, userLoginValidator } from './validators/validators.js';
+import { NotFoundError } from './errors/NotFoundError.js';
 
 const app = express();
 
@@ -36,8 +37,8 @@ app.use('/', userRoutes);
 app.use('/', cardRoutes);
 
 // Запрос главной страницы приложения
-app.all('/*', (req, res) => {
-  res.status(constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Страница не существует' });
+app.all('/*', (req, res, next) => {
+  next(new NotFoundError('Страница не существует'));
 });
 
 // Общий обработчик ошибок

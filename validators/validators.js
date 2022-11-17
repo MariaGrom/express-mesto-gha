@@ -1,5 +1,5 @@
 import { Joi, celebrate } from 'celebrate';
-import { urlAvatar } from '../models/user.js';
+import { urlLink } from '../models/user.js';
 
 // Валидация карточек
 export const cardIdValidator = celebrate({
@@ -11,7 +11,7 @@ export const cardIdValidator = celebrate({
 export const cardBodyValidator = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
-    link: Joi.string().uri({ scheme: ['http', 'https'] }).required(),
+    link: Joi.string().pattern(urlLink).uri({ scheme: ['http', 'https'] }).required(),
   }),
 });
 
@@ -26,15 +26,15 @@ export const userBodyValidator = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().uri({ scheme: ['http', 'https'] }),
+    avatar: Joi.string().pattern(urlLink).uri({ scheme: ['http', 'https'] }),
     email: Joi.string().email().required(),
-    password: Joi.string().min(8).required(),
+    password: Joi.string().required(),
   }),
 });
 
 export const userAvatarValidator = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().regex(urlAvatar).uri({ scheme: ['http', 'https'] }).required(),
+    avatar: Joi.string().pattern(urlLink).uri({ scheme: ['http', 'https'] }).required(),
   }),
 });
 
@@ -48,6 +48,6 @@ export const userProfileValidator = celebrate({
 export const userLoginValidator = celebrate({
   body: Joi.object().keys({
     email: Joi.string().email().required(),
-    password: Joi.string().min(8).required(),
+    password: Joi.string().required(),
   }),
 });
